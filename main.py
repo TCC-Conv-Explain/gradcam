@@ -22,16 +22,23 @@ bp = [gb.forward(tensor.requires_grad_()) for tensor in tensors]
 for (idx, (tensor, output)) in enumerate(zip(view_tensors, heatmaps)):
   heatmap = output[0]
   im = (inp_to_np(tensor)//3)*2 + heatmap_to_np(heatmap) //3
+  cv2.imwrite(f'output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GC_RAW.png', im)
+  
   plt.title(output[1])
+  
+
+  im=im[:, :, ::-1]
   plt.imshow(im)
-  plt.savefig(f'./output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GC.png')
+  
+  plt.savefig(f'./output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GC.png',  bbox_inches='tight')
 
 for (idx, (tensor, output)) in enumerate(zip(view_tensors, bp)):
   fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
   fig.suptitle(output[1])
   ax1.imshow(inp_to_np(tensor))
-  ax2.imshow(output[0], cmap='gray')
-  plt.savefig(f'output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GB.png')
+  ax2.imshow(output[0].numpy(), cmap='gray')
+  cv2.imwrite( f'output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GB_RAW.png', output[0].numpy())
+  plt.savefig(f'output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GB.png',  bbox_inches='tight')
 
 for (idx, (tensor, output_gc, output_bp)) in enumerate(zip(view_tensors, heatmaps, bp)):
   heatmap = output_gc[0]
@@ -40,6 +47,15 @@ for (idx, (tensor, output_gc, output_bp)) in enumerate(zip(view_tensors, heatmap
   print(heatmap.max())
   heatmap = heatmap / heatmap.max()
   im = (inp_to_np(tensor)//3)*2 + heatmap_to_np(heatmap) //3
+  cv2.imwrite(f'output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GGC_RAW.png', im)
+
+  fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
+  fig.suptitle(output[1])
+  ax1.imshow(inp_to_np(tensor))
+  
+  im=im[:, :, ::-1]
+  ax2.imshow(im)
   plt.title(output_gc[1])
+  
   plt.imshow(im)
-  plt.savefig(f'output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GGC.png')
+  plt.savefig(f'output/{files[idx][files[idx].rindex('/'):files[idx].rindex('.')]}-GGC.png', bbox_inches='tight')

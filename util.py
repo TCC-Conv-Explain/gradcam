@@ -12,10 +12,12 @@ import numpy as np
 print(device)
 
 def heatmap_to_np(heatmap):
-  heatmap = heatmap.cpu().detach().squeeze(0).numpy()
+  heatmap = heatmap.cpu().detach().squeeze(0).numpy()  
 
+  heatmap = (heatmap - heatmap.min())/(heatmap.max()-heatmap.min())
   heatmap = (heatmap *255).astype(np.uint8)
   colors= cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+  colors = cv2.cvtColor(colors, cv2.COLOR_BGR2RGB)
   colors[heatmap<0,:]=0
   return colors
 def inp_to_np(inp):
